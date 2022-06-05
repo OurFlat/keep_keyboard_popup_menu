@@ -90,12 +90,15 @@ class WithKeepKeyboardPopupMenu extends StatefulWidget {
   /// [_defaultBackgroundBuilder]
   final PopupMenuBackgroundBuilder backgroundBuilder;
 
+  final void Function(bool)? onVisibleChanged;
+
   WithKeepKeyboardPopupMenu({
     required this.childBuilder,
     this.menuBuilder,
     this.menuItemBuilder,
     this.calculatePopupPosition = _defaultCalculatePopupPosition,
     this.backgroundBuilder = _defaultBackgroundBuilder,
+    this.onVisibleChanged,
     Key? key,
   })  : assert((menuBuilder == null) != (menuItemBuilder == null),
             'You can only pass one of [menuBuilder] and [menuItemBuilder].'),
@@ -249,6 +252,7 @@ class WithKeepKeyboardPopupMenuState extends State<WithKeepKeyboardPopupMenu> {
 
       await openMenuCompleter.future;
       popupState = PopupMenuState.OPENED;
+      widget.onVisibleChanged?.call(true);
     }
   }
 
@@ -260,6 +264,7 @@ class WithKeepKeyboardPopupMenuState extends State<WithKeepKeyboardPopupMenu> {
       await _menuKey.currentState!.hideMenu();
       _entry!.remove();
       popupState = PopupMenuState.CLOSED;
+      widget.onVisibleChanged?.call(false);
     }
   }
 }
