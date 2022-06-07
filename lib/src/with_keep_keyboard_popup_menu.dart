@@ -114,22 +114,26 @@ class WithKeepKeyboardPopupMenuState extends State<WithKeepKeyboardPopupMenu> {
   GlobalKey<AnimatedPopupMenuState> _menuKey = GlobalKey();
   OverlayEntry? _entry;
   PopupMenuState popupState = PopupMenuState.CLOSED;
-  late final StreamSubscription<bool> _keyboardVisibilitySub;
+  late final StreamSubscription<bool>? _keyboardVisibilitySub;
 
   @override
   void initState() {
     super.initState();
-    _keyboardVisibilitySub = KeyboardVisibilityController()
-        .onChange
-        .distinct()
-        .listen((isKeyboardVisible) {
-      if (!isKeyboardVisible) closePopupMenu();
-    });
+    if (defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.iOS ||
+        kIsWeb) {
+      _keyboardVisibilitySub = KeyboardVisibilityController()
+          .onChange
+          .distinct()
+          .listen((isKeyboardVisible) {
+        if (!isKeyboardVisible) closePopupMenu();
+      });
+    }
   }
 
   @override
   void dispose() {
-    _keyboardVisibilitySub.cancel();
+    _keyboardVisibilitySub?.cancel();
     closePopupMenu();
     super.dispose();
   }
