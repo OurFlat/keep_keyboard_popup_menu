@@ -90,12 +90,15 @@ class WithKeepKeyboardPopupMenu extends StatefulWidget {
   /// [_defaultBackgroundBuilder]
   final PopupMenuBackgroundBuilder backgroundBuilder;
 
+  final void Function(bool)? onVisibleChanged;
+
   WithKeepKeyboardPopupMenu({
     required this.childBuilder,
     this.menuBuilder,
     this.menuItemBuilder,
     this.calculatePopupPosition = _defaultCalculatePopupPosition,
     this.backgroundBuilder = _defaultBackgroundBuilder,
+    this.onVisibleChanged,
     Key? key,
   })  : assert((menuBuilder == null) != (menuItemBuilder == null),
             'You can only pass one of [menuBuilder] and [menuItemBuilder].'),
@@ -111,22 +114,26 @@ class WithKeepKeyboardPopupMenuState extends State<WithKeepKeyboardPopupMenu> {
   GlobalKey<AnimatedPopupMenuState> _menuKey = GlobalKey();
   OverlayEntry? _entry;
   PopupMenuState popupState = PopupMenuState.CLOSED;
-  late final StreamSubscription<bool> _keyboardVisibilitySub;
+  late final StreamSubscription<bool>? _keyboardVisibilitySub;
 
   @override
   void initState() {
     super.initState();
-    _keyboardVisibilitySub = KeyboardVisibilityController()
-        .onChange
-        .distinct()
-        .listen((isKeyboardVisible) {
-      if (!isKeyboardVisible) closePopupMenu();
-    });
+    if (defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.iOS ||
+        kIsWeb) {
+      _keyboardVisibilitySub = KeyboardVisibilityController()
+          .onChange
+          .distinct()
+          .listen((isKeyboardVisible) {
+        if (!isKeyboardVisible) closePopupMenu();
+      });
+    }
   }
 
   @override
   void dispose() {
-    _keyboardVisibilitySub.cancel();
+    _keyboardVisibilitySub?.cancel();
     closePopupMenu();
     super.dispose();
   }
@@ -244,6 +251,7 @@ class WithKeepKeyboardPopupMenuState extends State<WithKeepKeyboardPopupMenu> {
 
       await openMenuCompleter.future;
       popupState = PopupMenuState.OPENED;
+      widget.onVisibleChanged?.call(true);
     }
   }
 
@@ -255,6 +263,7 @@ class WithKeepKeyboardPopupMenuState extends State<WithKeepKeyboardPopupMenu> {
       await _menuKey.currentState!.hideMenu();
       _entry!.remove();
       popupState = PopupMenuState.CLOSED;
+      widget.onVisibleChanged?.call(false);
     }
   }
 }
