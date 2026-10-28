@@ -64,3 +64,11 @@ WithKeepKeyboardPopupMenu(
 ```
 
 You can also use the `menuBuilder` property to show any widget you want in the popup menu, use `backgroundBuilder` property to customize background of the popup menu, and `calculatePopupPosition` property to customize the position of the popup menu. For details, see the documentation and example.
+
+
+## OurFlat fork compatibility
+
+This fork supports `flutter_keyboard_visibility` 6 and 7 without changing menu
+behavior. CI checks opening/closing the popup and keyboard-hide events against both
+majors using Flutter 3.47.8. Run `flutter pub get` and
+`flutter test` locally.

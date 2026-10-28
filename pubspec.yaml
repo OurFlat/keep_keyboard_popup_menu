@@ -10,6 +10,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_keyboard_visibility: ^6.0.0
+  flutter_keyboard_visibility: '>=6.0.0 <8.0.0'
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
 
 flutter:
